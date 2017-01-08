@@ -367,7 +367,13 @@ class Ess_M2ePro_Model_Magento_Product_Variation
             )->getItems();
 
             foreach ($selectionsCollectionItems as $item) {
-                $optionCombinationTitle[] = $item->getName();
+
+                $itemName = Mage::getResourceModel('catalog/product')->getAttributeRawValue($item->getEntityId(), 'simple_name', NULL);
+                if (empty($itemName)) {
+                    $itemName = $item->getName();
+                }
+                $optionCombinationTitle[] = $itemName;
+
                 $possibleVariationProductOptions[] = array(
                     'product_id'   => $item->getProductId(),
                     'product_type' => $product->getTypeId(),
@@ -686,10 +692,15 @@ class Ess_M2ePro_Model_Magento_Product_Variation
                     continue;
                 }
 
+                $itemName = Mage::getResourceModel('catalog/product')->getAttributeRawValue($selection->getData('product_id'), 'simple_name', NULL);
+                if (empty($itemName)) {
+                    $itemName = $selection->getData('name');
+                }
+
                 $bundleOption['values'][] = array(
                     'product_ids' => array($selection->getData('product_id')),
                     'value_id'    => $selection->getData('selection_id'),
-                    'labels'      => array(trim($selection->getData('name'))),
+                    'labels'      => array(trim($itemName)),
                 );
             }
 
